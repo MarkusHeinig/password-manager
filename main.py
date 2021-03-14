@@ -22,7 +22,9 @@ def generate_password():
     password_list = password_letters + password_symbols + password_numbers
     shuffle(password_list)
     password = "".join(password_list)
+    # populate the entry with the generated password
     password_entry.insert(0, password)
+    # once generate password is clicked, entire string is put in clipboard to be pasted somewhere(using pyperclip)
     pyperclip.copy(password)
 
 
@@ -66,6 +68,7 @@ website_entry.grid(column=1, row=1, columnspan=2)
 website_entry.focus()
 email_entry = Entry(width=50)
 email_entry.grid(column=1, row=2, columnspan=2)
+# have email entry a starting value
 email_entry.insert(0, "testmailaccount@gmial.com")
 password_entry = Entry(width=32)
 password_entry.grid(column=1, row=3)
