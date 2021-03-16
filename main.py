@@ -44,17 +44,42 @@ def save():
     if len(website) == 0 or len(password) == 0:
         messagebox.showwarning(title="Oops", message="Please make sure you haven't left any fields empty!")
     else:
-        with open("data.json", "r") as data_file:
-            # Reading old data
-            data = json.load(data_file)
+        try:
+            with open("data.json", "r") as data_file:
+                # Reading old data
+                data = json.load(data_file)
+        except FileNotFoundError:
+            with open("data.json", "w") as data_file:
+                json.dump(new_data, data_file, indent=4)
+        else:
             # Updating old data with new data
             data.update(new_data)
-        with open("data.json", "w") as data_file:
-            # Saving updated data
-            json.dump(data, data_file, indent=4)
 
+            with open("data.json", "w") as data_file:
+                # Saving updated data
+                json.dump(data, data_file, indent=4)
+        finally:
             website_entry.delete(0, END)
             password_entry.delete(0, END)
+            # print(data["Amazon"]["email"])
+
+
+# ---------------------------- FIND PASSWORD ------------------------------- #
+def find_password():
+    website = website_entry.get()
+    try:
+        with open("data.json") as data_file:
+            # Reading old data
+            data = json.load(data_file)
+    except FileNotFoundError:
+        messagebox.showinfo(title="Warning", message="No Data File Found.")
+    else:
+        if website in data:
+            email = data[website]["email"]
+            password = data[website]["password"]
+            messagebox.showinfo(title=website, message=f"Email: {email} \nPassword: {password}")
+        else:
+            messagebox.showinfo(title="Warning", message=f"No details for {website} exists")
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -74,19 +99,20 @@ email_label.grid(column=0, row=2)
 password_label = Label(text="Password:")
 password_label.grid(column=0, row=3)
 
-website_entry = Entry(width=50)
-website_entry.grid(column=1, row=1, columnspan=2)
+website_entry = Entry(width=31)
+website_entry.grid(column=1, row=1)
 website_entry.focus()
-email_entry = Entry(width=50)
+email_entry = Entry(width=51)
 email_entry.grid(column=1, row=2, columnspan=2)
 # have email entry a starting value
 email_entry.insert(0, "testmailaccount@gmial.com")
-password_entry = Entry(width=32)
+password_entry = Entry(width=31)
 password_entry.grid(column=1, row=3)
 
+search_button = Button(text="Search", width=14, command=find_password)
+search_button.grid(column=2, row=1)
 password_button = Button(text="Generate Password", command=generate_password)
 password_button.grid(column=2, row=3)
-
 add_button = Button(text="Add", width=43, command=save)
 add_button.grid(column=1, row=4, columnspan=2)
 
